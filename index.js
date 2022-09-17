@@ -32,8 +32,8 @@ const workerFunc = async () => {
     tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
   });
 
-  // const image =  require('fs').readFileSync('./donate_wx.png');
-  const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
+  const image =  require('fs').readFileSync('./images/testocr.png');
+  // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
   const { data: { text } } = await worker.recognize(image);
   console.log(text);
   await worker.terminate();
