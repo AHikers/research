@@ -36,7 +36,6 @@ const workerFunc = async () => {
   // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
   const { data: { text } } = await worker.recognize(image);
   console.log(text);
-  await worker.terminate();
   return text;
 }
 
