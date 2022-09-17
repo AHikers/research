@@ -35,7 +35,7 @@ const workerFunc = async () => {
   const image =  require('fs').readFileSync('./images/testocr.png');
   // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
   const { data: { text } } = await worker.recognize(image);
-  console.log(text);
+  // console.log(text);
   return text;
 }
 
