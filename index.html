@@ -210,6 +210,8 @@
         <span class="count-number"></span>
         <span class="count-reset" onclick="set('clear')">清零</span>
       </span>
+      <div>获取英文</div>
+      <div class="eng-text"></div>
       <a class="btn btn-success btn-lg count-button" style="background: #07c160; border: 0"
         onclick="set('inc')">test计数+1</a>
       <div class="card" style="width: 320px; margin-bottom: 48px;">
@@ -273,6 +275,13 @@
     }).done(function (res) {
       if (res && res.data !== undefined) {
         $(".count-number").html(res.data);
+      }
+    });
+    $.ajax("/api/getText", {
+      method: "get",
+    }).done(function (res) {
+      if (res && res.data !== undefined) {
+        $(".eng-text").html(res.data);
       }
     });
   }
