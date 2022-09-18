@@ -24,7 +24,7 @@ app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-const workerFunc = async () => {
+const workerFunc = async (base64Img) => {
   await worker.load();
   await worker.loadLanguage('eng');
   await worker.initialize('eng', OEM.LSTM_ONLY);
@@ -32,9 +32,9 @@ const workerFunc = async () => {
     tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
   });
 
-  const image =  require('fs').readFileSync('./images/testocr.png');
+  // const image =  require('fs').readFileSync('./images/testocr.png');
   // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
-  const { data: { text } } = await worker.recognize(image);
+  const { data: { text } } = await worker.recognize(base64Img);
   // console.log(text);
   return text;
 }
@@ -66,7 +66,8 @@ app.get("/api/count", async (req, res) => {
 
 // 获取图片中的文字
 app.get("/api/getText", async (req, res) => {
-  const result = await workerFunc();
+  const {base64_image} = req.body;
+  const result = await workerFunc(base64_image);
   res.send({
     code: 0,
     data: result,
