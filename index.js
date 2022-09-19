@@ -14,6 +14,8 @@ app.use(express.json());
 app.use(cors());
 app.use(logger);
 
+const saveResultObj = {}
+
 const worker = Tesseract.createWorker({
   logger: m => console.log(m),
   errorHandler: err => console.log('[error:]', err),
@@ -24,7 +26,7 @@ app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-const workerFunc = async (base64Img) => {
+const workerFunc = async (base64Img, reqImgId) => {
   await worker.load();
   await worker.loadLanguage('eng');
   await worker.initialize('eng', OEM.LSTM_ONLY);
@@ -35,8 +37,9 @@ const workerFunc = async (base64Img) => {
   // const image =  require('fs').readFileSync('./images/testocr.png');
   // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
   const { data: { text } } = await worker.recognize(base64Img);
+  saveResultObj[reqImgId] = text;
   // console.log(text);
-  return text;
+  // return text;
 }
 
 // 更新计数
@@ -65,12 +68,28 @@ app.get("/api/count", async (req, res) => {
 });
 
 // 获取图片中的文字
-app.get("/api/getText", async (req, res) => {
-  const {base64_image} = req.body;
-  const result = await workerFunc(base64_image);
+app.post("/api/getText", async (req, res) => {
+  const {base64_image, reqImgId} = req.body;
+  workerFunc(base64_image, reqImgId);
   res.send({
     code: 0,
-    data: result,
+    data: 'doing',
+  });
+});
+
+// 获取图片中的文字
+app.post("/api/getResult", async (req, res) => {
+  const {reqImgId} = req.body;
+  let result = 'doing'
+  if (saveResultObj[reqImgId]) {
+    result = 'sucess'
+  }
+  res.send({
+    code: 0,
+    data: {
+      text: saveResultObj[reqImgId],
+      result,
+    },
   });
 });
 
