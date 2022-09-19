@@ -29,9 +29,9 @@ app.get("/", async (req, res) => {
 const workerFunc = async (base64Img, reqImgId) => {
   await worker.load();
   await worker.loadLanguage('eng');
-  await worker.initialize('eng', OEM.LSTM_ONLY);
+  await worker.initialize('eng', Tesseract.OEM.LSTM_ONLY);
   await worker.setParameters({
-    tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
+    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
   });
 
   // const image =  require('fs').readFileSync('./images/testocr.png');
