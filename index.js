@@ -36,8 +36,9 @@ const workerFunc = async (base64Img, reqImgId) => {
 
   // const image =  require('fs').readFileSync('./images/testocr.png');
   // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
-  console.log('image:', image)
-  const { data: { text } } = await worker.recognize(image);
+  const bufferImg = Buffer.from(base64Img, 'base64')
+  console.log('bufferImg:', bufferImg)
+  const { data: { text } } = await worker.recognize(bufferImg);
   saveResultObj[reqImgId] = text;
   // console.log(text);
   // return text;
