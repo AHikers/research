@@ -72,7 +72,7 @@ app.get("/api/count", async (req, res) => {
 // 获取图片中的文字
 app.post("/api/getText", async (req, res) => {
   const {base64_image, reqImgId} = req.body;
-  // workerFunc(base64_image, reqImgId);
+  workerFunc(base64_image, reqImgId);
   res.send({
     code: 0,
     data: 'doing',
@@ -112,6 +112,6 @@ async function bootstrap() {
   });
 }
 
-workerFunc()
+// workerFunc()
 
 bootstrap();
