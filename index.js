@@ -40,7 +40,7 @@ const workerFunc = async (base64Img, reqImgId) => {
   console.log('image:', image)
   const { data: { text } } = await worker.recognize(image);
   saveResultObj[reqImgId] = text;
-  // console.log(text);
+  console.log('ocrResult:', text);
   return text;
 }
 
@@ -72,7 +72,7 @@ app.get("/api/count", async (req, res) => {
 // 获取图片中的文字
 app.post("/api/getText", async (req, res) => {
   const {base64_image, reqImgId} = req.body;
-  workerFunc(base64_image, reqImgId);
+  // workerFunc(base64_image, reqImgId);
   res.send({
     code: 0,
     data: 'doing',
@@ -83,6 +83,7 @@ app.post("/api/getText", async (req, res) => {
 app.post("/api/getResult", async (req, res) => {
   const {reqImgId} = req.body;
   let result = 'doing'
+  console.log('saveResultObj:', saveResultObj)
   if (saveResultObj[reqImgId]) {
     result = 'sucess'
   }
@@ -110,5 +111,7 @@ async function bootstrap() {
     console.log("启动成功", port);
   });
 }
+
+workerFunc()
 
 bootstrap();
