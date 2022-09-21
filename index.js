@@ -34,11 +34,11 @@ const workerFunc = async (base64Img, reqImgId) => {
     tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
   });
 
-  const image =  require('fs').readFileSync('./images/testocr.png');
+  // const image =  require('fs').readFileSync('./images/testocr.png');
   // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
   const bufferImg = Buffer.from(base64Img, 'base64')
-  console.log('image:', image)
-  const { data: { text } } = await worker.recognize(image);
+  // console.log('image:', image)
+  const { data: { text } } = await worker.recognize(bufferImg);
   saveResultObj[reqImgId] = text;
   console.log('ocrResult:', text);
   return text;
