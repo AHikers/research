@@ -41,6 +41,9 @@ const workerFunc = async (base64Img, reqImgId) => {
   const { data: { text } } = await worker.recognize(bufferImg);
   saveResultObj[reqImgId] = text;
   console.log('ocrResult:', text);
+  if (!text) {
+    text = '匹配不到'
+  }
   return text;
 }
 
