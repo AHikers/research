@@ -27,24 +27,30 @@ app.get("/", async (req, res) => {
 });
 
 const workerFunc = async (base64Img, reqImgId) => {
-  await worker.load();
-  await worker.loadLanguage('eng');
-  await worker.initialize('eng', Tesseract.OEM.LSTM_ONLY);
-  await worker.setParameters({
-    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
-  });
+  let testResult = ''
+  try {
+    await worker.load();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng', Tesseract.OEM.LSTM_ONLY);
+    await worker.setParameters({
+      tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+    });
 
-  // const image =  require('fs').readFileSync('./images/testocr.png');
-  // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
-  const bufferImg = Buffer.from(base64Img, 'base64')
-  // console.log('image:', image)
-  const { data: { text } } = await worker.recognize(bufferImg);
-  saveResultObj[reqImgId] = text;
-  console.log('ocrResult:', text);
-  if (!text) {
-    text = '匹配不到'
+    // const image =  require('fs').readFileSync('./images/testocr.png');
+    // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
+    const bufferImg = Buffer.from(base64Img, 'base64')
+    // console.log('image:', image)
+    const { data } = await worker.recognize(bufferImg);
+    testResult = data.text
+  } catch(e) {
+    console.log('error2:', e)
   }
-  return text;
+  saveResultObj[reqImgId] = testResult;
+  console.log('ocrResult:', testResult);
+  if (!testResult) {
+    testResult = '匹配不到'
+  }
+  return testResult;
 }
 
 // 更新计数
