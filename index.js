@@ -80,6 +80,8 @@ app.get("/api/count", async (req, res) => {
 
 // 获取图片中的文字
 app.post("/api/getText", async (req, res) => {
+  // 清空
+  saveResultObj = {}
   const {base64_image, reqImgId} = req.body;
   try {
     workerFunc(base64_image, reqImgId);
