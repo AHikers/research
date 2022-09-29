@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 app.use(logger);
 
-const saveResultObj = {}
+let saveResultObj = {}
 
 const worker = Tesseract.createWorker({
   logger: m => console.log(m),
