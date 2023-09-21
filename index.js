@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require('fs');
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -15,6 +16,9 @@ app.use(cors());
 app.use(logger);
 
 let saveResultObj = {}
+
+// 储存从文件中读取出来的内容
+let fileContentList = [];
 
 const worker = Tesseract.createWorker({
   logger: m => console.log(m),
@@ -42,7 +46,7 @@ const workerFunc = async (base64Img, reqImgId) => {
     // console.log('image:', image)
     const { data } = await worker.recognize(bufferImg);
     testResult = data.text
-  } catch(e) {
+  } catch (e) {
     console.log('error2:', e)
   }
   saveResultObj[reqImgId] = testResult;
@@ -82,10 +86,10 @@ app.get("/api/count", async (req, res) => {
 app.post("/api/getText", async (req, res) => {
   // 清空
   saveResultObj = {}
-  const {base64_image, reqImgId} = req.body;
+  const { base64_image, reqImgId } = req.body;
   try {
     workerFunc(base64_image, reqImgId);
-  } catch(e) {
+  } catch (e) {
     console.log('error:', e)
   }
   res.send({
@@ -96,7 +100,7 @@ app.post("/api/getText", async (req, res) => {
 
 // 获取图片中的文字
 app.post("/api/getResult", async (req, res) => {
-  const {reqImgId} = req.body;
+  const { reqImgId } = req.body;
   let result = 'doing'
   console.log('saveResultObj:', saveResultObj)
   if (saveResultObj[reqImgId]) {
@@ -111,6 +115,21 @@ app.post("/api/getResult", async (req, res) => {
   });
 });
 
+// 获取问答内容
+app.post("/api/getContent", async (req, res) => {
+  const { mainTagId, subTagIds, page } = req.body;
+
+  if (!fileContentList || !fileContentList.length) {
+    fileContentList = await readFileGetContent()
+  }
+  const finalContentList = filterDataWithParams(mainTagId, subTagIds, page)
+
+  res.send({
+    code: 0,
+    data: finalContentList,
+  });
+});
+
 // 小程序调用，获取微信 Open ID
 app.get("/api/wx_openid", async (req, res) => {
   if (req.headers["x-wx-source"]) {
@@ -121,12 +140,68 @@ app.get("/api/wx_openid", async (req, res) => {
 const port = process.env.PORT || 80;
 
 async function bootstrap() {
-  await initDB();
+  // await initDB();
   app.listen(port, () => {
     console.log("启动成功", port);
   });
 }
 
+async function readFileGetContent() {
+  // 读取文件的路径
+  const filePath = './nodeGetText/finalData.txt';
+
+  const result = await new Promise((resolve, reject) => {
+    // 使用 fs.readFile 方法异步读取文件内容
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('读取文件出错:', err);
+        reject(err)
+        return;
+      }
+
+      // 输出文件内容
+      // console.log('文件内容:', JSON.parse(data));
+      resolve(JSON.parse(data))
+    });
+  })
+
+  return result;
+}
+
+function filterDataWithParams(mainTagId, subTagIds, page) {
+  const offset = 15;
+  if (!fileContentList || !fileContentList.length) {
+    return []
+  }
+  const newContentList = fileContentList.filter(obj => {
+    // 判断子标签中是否有查询条件中的标签，有返回true，没有返回false
+    let subTagFlag = false;
+    subTagIds.forEach(val => {
+      if (obj.subTagIds.includes(val)) {
+        subTagFlag = true
+      }
+    })
+    // -1表示全部
+    if (mainTagId === -1) {
+      return subTagFlag;
+    }
+    return obj.mainTagId === mainTagId && subTagFlag;
+  })
+  const start = (page - 1) * offset;
+  const end = start + 15;
+  const pageContentList = newContentList.slice(start, end);
+  return pageContentList;
+}
+
 // workerFunc()
 
 bootstrap();
+
+// async function testData() {
+//   if (!fileContentList || !fileContentList.length) {
+//     fileContentList = await readFileGetContent()
+//   }
+//   const finalContentList = filterDataWithParams(0, [1, 2, 3, 4], 1)
+//   console.log(finalContentList)
+// }
+// testData()
