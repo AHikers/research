@@ -126,7 +126,7 @@ app.post("/api/getContent", async (req, res) => {
 
   res.send({
     code: 0,
-    data: finalContentList,
+    data: adjustContentData(finalContentList),
   });
 });
 
@@ -176,11 +176,15 @@ function filterDataWithParams(mainTagId, subTagIds, page) {
   const newContentList = fileContentList.filter(obj => {
     // 判断子标签中是否有查询条件中的标签，有返回true，没有返回false
     let subTagFlag = false;
-    subTagIds.forEach(val => {
-      if (obj.subTagIds.includes(val)) {
-        subTagFlag = true
-      }
-    })
+    if (!subTagIds.length) {
+      subTagFlag = true
+    } else {
+      subTagIds.forEach(val => {
+        if (obj.subTagIds.includes(val)) {
+          subTagFlag = true
+        }
+      })
+    }
     // -1表示全部
     if (mainTagId === -1) {
       return subTagFlag;
@@ -191,6 +195,24 @@ function filterDataWithParams(mainTagId, subTagIds, page) {
   const end = start + 15;
   const pageContentList = newContentList.slice(start, end);
   return pageContentList;
+}
+
+// 调整数据结构, 把content中问和答分开变成一个数组
+function adjustContentData(data) {
+  const newData = data.map(item => {
+    const questionList = item.content.split('问：');
+    questionList.shift();
+    const adjustContent = questionList.map(val => {
+      const arr = val.split('答：');
+      return {
+        question: arr[0],
+        answer: arr[1],
+      }
+    })
+    item.content = adjustContent;
+    return item;
+  });
+  return newData;
 }
 
 // workerFunc()
