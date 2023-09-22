@@ -31,8 +31,9 @@ function getPdfFileText(filePath) {
 
       // 将各个回答生成数组
       const contentArr = pdfText.split('&&');
-      // 输出PDF文本内容
-      // console.log('PDF文本内容:', contentArr);
+      // 第一个为空字符需去掉
+      contentArr.shift();
+      // console.log('PDF文本内容:', contentArr.length);
       // 读取标签pdf文件并处理各条内容的标签
       getTagPdfText(contentArr);
     });
@@ -63,7 +64,7 @@ function getTagPdfText(contentArr) {
       const dataList = pdfText.split(/\d+、/)
       //第一个为空字符，需要去掉
       dataList.shift();
-      // console.log(dataList)
+      // console.log('dataList:', dataList)
 
       const subTagArr = dealTagOriginData(dataList);
 
@@ -73,7 +74,7 @@ function getTagPdfText(contentArr) {
 
       const finalData = generateObjDataByContent(contentArr, dataTagObj);
       // 将获得的最终数据写入文件中
-      writeFinalData(finalData);
+      writeFinalData(finalData.reverse());
     });
   });
 }
@@ -178,6 +179,7 @@ function generateObjDataByContent(contentArr, dataTagObj) {
 
 // 将得到的内容写入文件
 function writeFinalData(finalData) {
+  // console.log('finalData:', finalData);
   const content = JSON.stringify(finalData);
   // 将数据写入文件
   fs.writeFile(finalDataPath, content, 'utf8', (err) => {
