@@ -200,10 +200,10 @@ function filterDataWithParams(mainTagId, subTagIds, page) {
 // 调整数据结构, 把content中问和答分开变成一个数组
 function adjustContentData(data) {
   const newData = data.map(item => {
-    if (!item.content || item.content.indexOf('问：') === -1) {
-      item.content = [];
-      return item;
-    }
+    // if (!item.content || item.content.indexOf('问：') === -1) {
+    //   item.content = [];
+    //   return item;
+    // }
 
     const questionList = item.content.split('问：');
     questionList.shift();
