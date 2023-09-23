@@ -126,7 +126,7 @@ app.post("/api/getContent", async (req, res) => {
 
   res.send({
     code: 0,
-    data: adjustContentData(finalContentList),
+    data: adjustContentData([...finalContentList]),
   });
 });
 
@@ -199,7 +199,7 @@ function filterDataWithParams(mainTagId, subTagIds, page) {
 
 // 调整数据结构, 把content中问和答分开变成一个数组
 function adjustContentData(data) {
-  console.log('调整前的数据：', data);
+  // console.log('调整前的数据：', data);
   const newData = data.map(item => {
     if (!item.content || item.content.indexOf('问：') === -1) {
       item.content = [];
