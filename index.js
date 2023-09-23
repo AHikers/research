@@ -199,11 +199,12 @@ function filterDataWithParams(mainTagId, subTagIds, page) {
 
 // 调整数据结构, 把content中问和答分开变成一个数组
 function adjustContentData(data) {
+  console.log('调整前的数据：', data);
   const newData = data.map(item => {
-    // if (!item.content || item.content.indexOf('问：') === -1) {
-    //   item.content = [];
-    //   return item;
-    // }
+    if (!item.content || item.content.indexOf('问：') === -1) {
+      item.content = [];
+      return item;
+    }
 
     const questionList = item.content.split('问：');
     questionList.shift();
@@ -228,7 +229,7 @@ bootstrap();
 //   if (!fileContentList || !fileContentList.length) {
 //     fileContentList = await readFileGetContent()
 //   }
-//   const finalContentList = filterDataWithParams(0, [1, 2, 3, 4], 1)
-//   console.log(finalContentList)
+//   const finalContentList = filterDataWithParams(-1, [], 1)
+//   console.log(adjustContentData(finalContentList))
 // }
 // testData()
