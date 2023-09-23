@@ -123,10 +123,15 @@ app.post("/api/getContent", async (req, res) => {
     fileContentList = await readFileGetContent()
   }
   const finalContentList = filterDataWithParams(mainTagId, subTagIds, page)
+  const deepCopyContentList = finalContentList.map(item => {
+    return {
+      ...item,
+    }
+  })
 
   res.send({
     code: 0,
-    data: adjustContentData([...finalContentList]),
+    data: adjustContentData(deepCopyContentList),
   });
 });
 
