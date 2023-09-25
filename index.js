@@ -3,7 +3,7 @@ const fs = require('fs');
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const { init: initDB, Counter } = require("./db");
+// const { init: initDB, Counter } = require("./db");
 
 const Tesseract = require('tesseract.js');
 
@@ -58,29 +58,29 @@ const workerFunc = async (base64Img, reqImgId) => {
 }
 
 // 更新计数
-app.post("/api/count", async (req, res) => {
-  const { action } = req.body;
-  if (action === "inc") {
-    await Counter.create();
-  } else if (action === "clear") {
-    await Counter.destroy({
-      truncate: true,
-    });
-  }
-  res.send({
-    code: 0,
-    data: await Counter.count(),
-  });
-});
+// app.post("/api/count", async (req, res) => {
+//   const { action } = req.body;
+//   if (action === "inc") {
+//     await Counter.create();
+//   } else if (action === "clear") {
+//     await Counter.destroy({
+//       truncate: true,
+//     });
+//   }
+//   res.send({
+//     code: 0,
+//     data: await Counter.count(),
+//   });
+// });
 
-// 获取计数
-app.get("/api/count", async (req, res) => {
-  const result = await Counter.count();
-  res.send({
-    code: 0,
-    data: result,
-  });
-});
+// // 获取计数
+// app.get("/api/count", async (req, res) => {
+//   const result = await Counter.count();
+//   res.send({
+//     code: 0,
+//     data: result,
+//   });
+// });
 
 // 获取图片中的文字
 app.post("/api/getText", async (req, res) => {
