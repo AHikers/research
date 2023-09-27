@@ -154,7 +154,10 @@ app.post("/api/getContent", async (req, res) => {
   ]
   res.send({
     code: 0,
-    data: testContentList,
+    data: {
+      type: 1,
+      content: testContentList,
+    },
   });
 });
 
