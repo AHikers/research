@@ -195,7 +195,7 @@ function searchContentByData(searchContent) {
   fileContentList.forEach((item, index) => {
     let weight = 0
     searchChars.forEach(val => {
-      if (item.content.indexOf(val)) {
+      if (item.content.indexOf(val) > -1) {
         weight++;
       }
     })
@@ -312,7 +312,8 @@ bootstrap();
 //   if (!fileContentList || !fileContentList.length) {
 //     fileContentList = await readFileGetContent()
 //   }
-//   const finalContentList = filterDataWithParams(-1, [], 1)
+//   // const finalContentList = filterDataWithParams(-1, [], 1)
+//   const finalContentList = searchContentByData('执着')
 //   console.log(adjustContentData(finalContentList))
 // }
 // testData()
