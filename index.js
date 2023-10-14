@@ -20,42 +20,42 @@ let saveResultObj = {}
 // 储存从文件中读取出来的内容
 let fileContentList = [];
 
-const worker = Tesseract.createWorker({
-  logger: m => console.log(m),
-  errorHandler: err => console.log('[error:]', err),
-});
+// const worker = Tesseract.createWorker({
+//   logger: m => console.log(m),
+//   errorHandler: err => console.log('[error:]', err),
+// });
 
 // 首页
 app.get("/", async (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-const workerFunc = async (base64Img, reqImgId) => {
-  let testResult = ''
-  try {
-    await worker.load();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng', Tesseract.OEM.LSTM_ONLY);
-    await worker.setParameters({
-      tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
-    });
+// const workerFunc = async (base64Img, reqImgId) => {
+//   let testResult = ''
+//   try {
+//     await worker.load();
+//     await worker.loadLanguage('eng');
+//     await worker.initialize('eng', Tesseract.OEM.LSTM_ONLY);
+//     await worker.setParameters({
+//       tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+//     });
 
-    // const image =  require('fs').readFileSync('./images/testocr.png');
-    // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
-    const bufferImg = Buffer.from(base64Img, 'base64')
-    // console.log('image:', image)
-    const { data } = await worker.recognize(bufferImg);
-    testResult = data.text
-  } catch (e) {
-    console.log('error2:', e)
-  }
-  saveResultObj[reqImgId] = testResult;
-  console.log('ocrResult:', testResult);
-  if (!testResult) {
-    testResult = '匹配不到'
-  }
-  return testResult;
-}
+//     // const image =  require('fs').readFileSync('./images/testocr.png');
+//     // const image = 'https://lzw.me/wp-content/uploads/2017/02/donate_wx.png';
+//     const bufferImg = Buffer.from(base64Img, 'base64')
+//     // console.log('image:', image)
+//     const { data } = await worker.recognize(bufferImg);
+//     testResult = data.text
+//   } catch (e) {
+//     console.log('error2:', e)
+//   }
+//   saveResultObj[reqImgId] = testResult;
+//   console.log('ocrResult:', testResult);
+//   if (!testResult) {
+//     testResult = '匹配不到'
+//   }
+//   return testResult;
+// }
 
 // 更新计数
 // app.post("/api/count", async (req, res) => {
@@ -83,37 +83,37 @@ const workerFunc = async (base64Img, reqImgId) => {
 // });
 
 // 获取图片中的文字
-app.post("/api/getText", async (req, res) => {
-  // 清空
-  saveResultObj = {}
-  const { base64_image, reqImgId } = req.body;
-  try {
-    workerFunc(base64_image, reqImgId);
-  } catch (e) {
-    console.log('error:', e)
-  }
-  res.send({
-    code: 0,
-    data: 'doing',
-  });
-});
+// app.post("/api/getText", async (req, res) => {
+//   // 清空
+//   saveResultObj = {}
+//   const { base64_image, reqImgId } = req.body;
+//   try {
+//     workerFunc(base64_image, reqImgId);
+//   } catch (e) {
+//     console.log('error:', e)
+//   }
+//   res.send({
+//     code: 0,
+//     data: 'doing',
+//   });
+// });
 
 // 获取图片中的文字
-app.post("/api/getResult", async (req, res) => {
-  const { reqImgId } = req.body;
-  let result = 'doing'
-  console.log('saveResultObj:', saveResultObj)
-  if (saveResultObj[reqImgId]) {
-    result = 'sucess'
-  }
-  res.send({
-    code: 0,
-    data: {
-      text: saveResultObj[reqImgId],
-      result,
-    },
-  });
-});
+// app.post("/api/getResult", async (req, res) => {
+//   const { reqImgId } = req.body;
+//   let result = 'doing'
+//   console.log('saveResultObj:', saveResultObj)
+//   if (saveResultObj[reqImgId]) {
+//     result = 'sucess'
+//   }
+//   res.send({
+//     code: 0,
+//     data: {
+//       text: saveResultObj[reqImgId],
+//       result,
+//     },
+//   });
+// });
 
 // 获取问答内容
 app.post("/api/getContent", async (req, res) => {
@@ -164,6 +164,54 @@ app.post("/api/getContent", async (req, res) => {
   //   },
   // });
 });
+
+// 搜索内容接口
+app.post("/api/searchContent", async (req, res) => {
+  const { searchData } = req.body;
+  // 真实数据
+  if (!fileContentList || !fileContentList.length) {
+    fileContentList = await readFileGetContent()
+  }
+  const finalContentList = searchContentByData(searchData);
+  const deepCopyContentList = finalContentList.map(item => {
+    return {
+      ...item,
+    }
+  })
+
+  res.send({
+    code: 0,
+    data: {
+      type: 0,
+      content: adjustContentData(deepCopyContentList),
+    },
+  });
+});
+// 根据搜索内容匹配数据
+function searchContentByData(searchContent) {
+  // 根据搜索内容找出最匹配的十五条数据
+  const searchList = []
+  const searchChars = searchContent.split('');
+  fileContentList.forEach((item, index) => {
+    let weight = 0
+    searchChars.forEach(val => {
+      if (item.content.indexOf(val)) {
+        weight++;
+      }
+    })
+    if (weight) {
+      searchList.push({
+        index,
+        weight,
+      })
+    }
+  })
+  // 按照weight排序，找出最匹配的15条数据,
+  searchList.sort((a, b) => b.weight - a.weight)
+  const newSearchList = searchList.length > 15 ? searchList.slice(0, 15) : searchList;
+  return newSearchList.map(item => fileContentList[item.index])
+}
+
 
 // 小程序调用，获取微信 Open ID
 app.get("/api/wx_openid", async (req, res) => {
