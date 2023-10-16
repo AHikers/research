@@ -115,6 +115,25 @@ app.get("/", async (req, res) => {
 //   });
 // });
 
+// 审核时用的测试数据
+const testContentList = [
+  {
+    content: '今日笔记↵每天下来发现许多该做的事都没做完，进度十分的不理想。时间紧迫，但又效率低下，导致↵事实上的拖延、懈怠。做事不果敢，发心无力，知行不能合一。↵请问如何才能致心一处、心无旁骛',
+    id: 417,
+    mainTagId: 2,
+  },
+  {
+    content: '今日笔记↵诚其意”解释是：不自欺，如闻屎臭就远离，见鲜花就驻足，喜欢就喜欢，承↵认喜欢；不喜欢就不喜欢，承认不喜欢，知之就坦诚其知之，不知就坦诚其不知。简简单单',
+    id: 416,
+    mainTagId: 1,
+  },
+  {
+    content: '今日笔记↵今日小观：近日发生很多不如意的事情，接二连三受到打击，自己也能做到心不随境↵转，没有什么特别悲伤的情绪，知道是自己的问题，需要接纳',
+    id: 415,
+    mainTagId: 0,
+  },
+]
+
 // 获取问答内容
 app.post("/api/getContent", async (req, res) => {
   const { mainTagId, subTagIds, page } = req.body;
@@ -130,39 +149,23 @@ app.post("/api/getContent", async (req, res) => {
     }
   })
 
-  res.send({
-    code: 0,
-    data: {
-      type: 0,
-      content: adjustContentData(deepCopyContentList),
-    },
-  });
-
-  // 审核时用的测试数据
-  // const testContentList = [
-  //   {
-  //     content: '今日笔记↵每天下来发现许多该做的事都没做完，进度十分的不理想。时间紧迫，但又效率低下，导致↵事实上的拖延、懈怠。做事不果敢，发心无力，知行不能合一。↵请问如何才能致心一处、心无旁骛',
-  //     id: 417,
-  //     mainTagId: 2,
-  //   },
-  //   {
-  //     content: '今日笔记↵诚其意”解释是：不自欺，如闻屎臭就远离，见鲜花就驻足，喜欢就喜欢，承↵认喜欢；不喜欢就不喜欢，承认不喜欢，知之就坦诚其知之，不知就坦诚其不知。简简单单',
-  //     id: 416,
-  //     mainTagId: 1,
-  //   },
-  //   {
-  //     content: '今日笔记↵今日小观：近日发生很多不如意的事情，接二连三受到打击，自己也能做到心不随境↵转，没有什么特别悲伤的情绪，知道是自己的问题，需要接纳',
-  //     id: 415,
-  //     mainTagId: 0,
-  //   },
-  // ]
+  // 运用在正式环境
   // res.send({
   //   code: 0,
   //   data: {
-  //     type: 1,
-  //     content: testContentList,
+  //     type: 0,
+  //     content: adjustContentData(deepCopyContentList),
   //   },
   // });
+
+  // 审核时用的代码
+  res.send({
+    code: 0,
+    data: {
+      type: 1,
+      content: testContentList,
+    },
+  });
 });
 
 // 搜索内容接口
@@ -179,11 +182,21 @@ app.post("/api/searchContent", async (req, res) => {
     }
   })
 
+  // 运用在正式环境
+  // res.send({
+  //   code: 0,
+  //   data: {
+  //     type: 0,
+  //     content: adjustContentData(deepCopyContentList),
+  //   },
+  // });
+
+  // 审核时用的代码
   res.send({
     code: 0,
     data: {
-      type: 0,
-      content: adjustContentData(deepCopyContentList),
+      type: 1,
+      content: testContentList,
     },
   });
 });
