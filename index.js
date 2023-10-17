@@ -150,22 +150,23 @@ app.post("/api/getContent", async (req, res) => {
   })
 
   // 运用在正式环境
-  // res.send({
-  //   code: 0,
-  //   data: {
-  //     type: 0,
-  //     content: adjustContentData(deepCopyContentList),
-  //   },
-  // });
-
-  // 审核时用的代码
   res.send({
     code: 0,
     data: {
-      type: 1,
-      content: testContentList,
+      type: 0,
+      content: adjustContentData(deepCopyContentList),
     },
   });
+
+  // 审核时用的代码
+  // res.send({
+  //   code: 0,
+  //   data: {
+  //     type: 1,
+  //     content: testContentList,
+  //   },
+  // });
+
 });
 
 // 搜索内容接口
@@ -183,22 +184,22 @@ app.post("/api/searchContent", async (req, res) => {
   })
 
   // 运用在正式环境
-  // res.send({
-  //   code: 0,
-  //   data: {
-  //     type: 0,
-  //     content: adjustContentData(deepCopyContentList),
-  //   },
-  // });
-
-  // 审核时用的代码
   res.send({
     code: 0,
     data: {
-      type: 1,
-      content: testContentList,
+      type: 0,
+      content: adjustContentData(deepCopyContentList),
     },
   });
+
+  // 审核时用的代码
+  // res.send({
+  //   code: 0,
+  //   data: {
+  //     type: 1,
+  //     content: testContentList,
+  //   },
+  // });
 });
 // 根据搜索内容匹配数据
 function searchContentByData(searchContent) {
